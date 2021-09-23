@@ -1,0 +1,59 @@
+{% block content %}
+
+     <style>
+        body {
+          background-image: url("{{url_for('static', filename='img/M1103865745LE_b2.jpg') }}");
+          background-repeat: no-repeat;
+          color: white;
+        }
+        a:link {
+          color: yellow;
+        }
+        a:visited {
+          color: yellow;
+        }
+    </style>
+    <div class="form-wrapper">
+        <h2 class="title">Running co-registration</h2>
+        <form method="POST" action="{{ url_for('coreg') }}">
+             {{ form.hidden_tag() }}
+            <fieldset class="form-field">
+              <p>
+                  {{ form.dir1.label }}<br/>
+                  {{ form.dir1 }} &emsp;
+                  {{ form.dir1_mission.label }}
+                  {{ form.dir1_mission }} &emsp;
+                  {{ form.dir1_camera.label }}
+                  {{ form.dir1_camera }}
+              <p/>
+              <p>
+                  {{ form.dir2.label }}<br/>
+                  {{ form.dir2() }}
+              <p/>
+              <p>
+                  {{ form.dir_output.label }}<br/>
+                  {{ form.dir_output() }}
+              <p/>
+              <p> <br/>
+                  {{ form.coreg_type.label }}
+                  {{ form.coreg_type() }} &emsp;
+                  {{ form.num_proc.label }}
+                  {{ form.num_proc() }}
+                  {% if form.num_proc.errors %}
+                    <ul class="errors">{% for error in form.num_proc.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                  {% endif %}
+              <p/>
+              <p>
+                  {{ form.filter_cn.label }}
+                  {{ form.filter_cn() }}
+              <p/>
+              <p>{{ form.submit }}<p/>
+            </fieldset>
+        </form>
+
+        <div>Download, upload, co-registration results:
+            <a href="{{ jupyter_url }}" target="_blank">here</a>
+        </div>
+    </div>
+
+{% endblock %}
