@@ -13,12 +13,9 @@ DELETE_INTERMEDIATE_FILES = True
 
 # isis configuration
 grid_definition = './config/grid_750.def'
-#coregistration_algorithm = './config/coreg.maxcor_0.65_10-30_100-100.def'
-#coregistration_algorithm_name = 'coreg.maxcor_0.65_10-30_100-100'
-#auto_reg_template = './config/autoRegTemplate.def'
 pointreg_template = './config/pointreg_00.def'
-pointreg_template_2 = './config/pointreg_autoreg_00.def'
-pointreg_template_3 = './config/pointreg_medchip_00.def'
+#pointreg_template_2 = './config/pointreg_autoreg_00.def'
+#pointreg_template_3 = './config/pointreg_medchip_00.def'
 QL_THRESHOLD = 0.5
 QL_THRESHOLD_ADV = 0.7
 MODIFIED_ZSCORE_THRESH = 3.
@@ -151,6 +148,9 @@ def get_artifacts_prefix(path):
 
 
 def goodness_of_fit_basic_coreg(stats_file):
+    """
+    Collect statistics for basic co-registration
+    """
     shutil.copy(stats_file, stats_file + '.initial.csv')
 
     df_stats = pd.read_csv(stats_file, skiprows=[1])
@@ -164,6 +164,9 @@ def goodness_of_fit_basic_coreg(stats_file):
 
 
 def goodness_of_fit_adv_coreg(stats_file, interim_pvl_path, scale):
+    """
+    Collect statistics for advanced co-registration
+    """
     df_stats = pd.read_csv(stats_file)
     if 'Filtered' in df_stats.columns:
         df_stats = df_stats[df_stats['Filtered'] != 1]

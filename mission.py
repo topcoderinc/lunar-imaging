@@ -2,7 +2,7 @@
 import os
 import pathlib
 import shutil
-import pandas as pd
+import time
 from typing import List, Tuple, Dict, TextIO, Any, Union
 
 import kalasiris as isis
@@ -193,24 +193,23 @@ def apollo_pan_img_preprocess(image_path, output_folder, coreg_type, mission):
                        vel_radial=pan_params['vel_radial'])
 
     print('--> [INFO] Downscaling cube')
-    image_cube_to = pathlib.Path(output_folder) / image_cube.with_suffix('.x10' + '.cub').name
-    print(image_cube_to)
-    isis.reduce(from_=image_cube, to=image_cube_to, sscale=10, lscale=10)
-    image_cube = image_cube_to
+    image_cube_reduced = pathlib.Path(output_folder) / image_cube.with_suffix('.x20' + '.cub').name
+    isis.reduce(from_=image_cube, to=image_cube_reduced, sscale=20, lscale=20)
+    #image_cube_reduced = image_cube
 
     print('--> [INFO] Histogram equalization')
-    image_cube_to = image_cube.with_suffix('.cal' + '.cub')
-    isis.histeq(from_=image_cube, to=image_cube_to)
-    image_cube = image_cube_to
+    image_cube_cal = image_cube_reduced.with_suffix('.cal.cub')
+    isis.histeq(from_=image_cube_reduced, to=image_cube_cal)
+    #image_cube = image_cube_to
 
     if coreg_type == 'basic':
         print('--> [INFO] Initializing footprints')
-        isis.camstats(from_=image_cube, sinc=h.isis_sinc, linc=h.isis_linc, attach=True)
-        isis.footprintinit(from_=image_cube, sinc=h.isis_linc_foot, linc=h.isis_linc_foot)
+        isis.camstats(from_=image_cube_cal, sinc=h.isis_sinc, linc=h.isis_linc, attach=True)
+        isis.footprintinit(from_=image_cube_cal, sinc=h.isis_linc_foot, linc=h.isis_linc_foot)
 
-    h.delete_files_with_ckeck([image_cube], output_folder)
+    #h.delete_files_with_ckeck([image_cube, image_cube_reduced], output_folder)
 
-    return image_cube.resolve()
+    return image_cube_cal.resolve()
 
 
 def create_file_list(list_of_cubs, file_list_name, output_folder):

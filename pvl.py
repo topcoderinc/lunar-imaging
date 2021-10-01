@@ -13,7 +13,6 @@ import zscore
 def all_substrings_in(substr_lst: List[str], line: str) -> bool:
     """
     Check if all substrings are in the line.
-
     """
     ret = True
     for match_str in substr_lst:
@@ -52,8 +51,7 @@ def read_till(match_str_lst: List[str], f: TextIO) -> Tuple[List[str], str]:
 
 def pvlgroup_to_dict(grp: List[str]) -> Dict[str, str]:
     """
-    Parse pvl group formatted as list of 'key = value' strings into dictionary
-
+    Parse pvl group formatted as a list of 'key = value' strings into dictionary
     """
     grp_dict = {}
 
@@ -84,7 +82,11 @@ def clean_pvldict(pvl_dict: Dict[str, str]) -> Dict[str, Any]:
     return cleaned_dict
 
 
-def update_pvlgroup(source_pvl: List[str], keys: List[str], pvl_dict: Dict[str, Any]) -> Dict[str, Any]:
+def update_pvlgroup(source_pvl: List[str], keys: List[str], pvl_dict: Dict[str, Any]) -> List[str]:
+    """
+    Update 'source_pvl' (containing pvl group as list of strings) from 'pvl_dict'
+    using only dictionary keys from 'keys'
+    """
     res_pvl = source_pvl.copy()
 
     for i, line in enumerate(res_pvl):
@@ -95,6 +97,9 @@ def update_pvlgroup(source_pvl: List[str], keys: List[str], pvl_dict: Dict[str, 
 
 
 def write_final_cn(cn: str, output_folder: pathlib.Path, output_cn_name: str):
+    """
+    Write Control Network from 'cn' string to files in both binary and pvl (text) format
+    """
     temp_pvl_path = output_folder / 'camtp.pvl'
 
     with open(temp_pvl_path, 'wt') as f:
@@ -115,12 +120,17 @@ def translate_coreg_res(input_pvl_path: pathlib.Path,
                         lroc_cube_path: pathlib.Path,
                         output_folder: pathlib.Path,
                         output_cn_name: str):
+    """
+    Translate Control Network. Get interim (or filtered) control network after co-registration process
+    and convert it to the control network for source images
+    """
     temp_pvl_path = output_folder / 'camtp.pvl'
 
     with open(input_pvl_path, 'rt') as f:
         line = ' '
         control_network = []
 
+        # parse control network
         while line:
             head, line = read_till(['Group', '=', 'ControlMeasure'], f)
             control_network.extend(head)
@@ -178,6 +188,10 @@ def count_ignored(input_pvl_path: pathlib.Path) -> int:
 
 
 def filter_points(stats_path):
+    """
+    Add to stats file column 'Filtered' and fill it.
+    All points with Modified z-score bigger than threshold (MODIFIED_ZSCORE_THRESH) are marked as filtered
+    """
     df_stats = pd.read_csv(stats_path)
     df_stats['Filtered'] = 0
     df_stats.to_csv(stats_path, index=False)
@@ -231,6 +245,9 @@ def point_in_measures(point_tuples_lst, pvl_dict_measures, abs_tol=0.01):
 
 
 def filter_coreg_result(input_pvl_path, stats_path, output_pvl_path):
+    """
+    Filter all points in Control Network marked in stats file as 'Filtered'
+    """
     filtered_points = filter_points(stats_path)
     #print(filtered_points)
 
